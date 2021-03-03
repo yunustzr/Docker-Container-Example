@@ -1,0 +1,8 @@
+#! /bin/bash
+
+imageBase=$(base64  /home/yunus-pc/Resimler/deneme.jpg)
+echo "<div>
+  <p>Taken from wikpedia</p>
+  <img src=\"data:image/png;base64,$imageBase\" alt=\"Red dot\" />
+</div>
+" >>deneme.html
