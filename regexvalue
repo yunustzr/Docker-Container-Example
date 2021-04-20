@@ -5,3 +5,69 @@ curl -D- -u admin:pw -X PUT -d "{\"update\":{\"fixVersions\":[{\"set\":[{\"id\":
 Using version's name:
 
 curl -D- -u admin:pw -X PUT -d "{\"update\":{\"fixVersions\":[{\"set\":[{\"name\":\"v1\"}]}]}}" -H "Content-Type: application/json" "http://localhost:8080/rest/api/2/issue/SSP-22"
+
+
+public void replaceFixVersion(String projectKey, String fromVersion, String toVersion, String query) {
+
+        Version newVersion = getVersionByName(projectKey, toVersion);
+        if (newVersion == null) {
+            return;
+        }
+
+        LOGGER.fine("Fetching versions with JQL:" + query);
+        List<Issue> issues = service.getIssuesFromJqlSearch(query, Integer.MAX_VALUE);
+        if (issues == null) {
+            return;
+        }
+        LOGGER.fine("Found issues: " + issues.size());
+
+        for (Issue issue : issues) {
+            Set<Version> newVersions = new HashSet<Version>();
+            newVersions.add(newVersion);
+            for (Version currentVersion : issue.getFixVersions()) {
+                if (!currentVersion.getName().equals(fromVersion)) {
+                    newVersions.add(currentVersion);
+                }
+            }
+
+            LOGGER.fine("Replaceing version in issue: " + issue.getKey());
+            service.updateIssue(issue.getKey(), Lists.newArrayList(newVersions));
+        }
+    }
+
+    /**
+     * Adds the specified version to the fix version list of all issues matching the JQL.
+     *
+     * @param projectKey The JIRA Project
+     * @param version    The version to add
+     * @param query      The JQL Query
+     */
+    public void addFixVersion(String projectKey, String version, String query) {
+
+        Version newVersion = getVersionByName(projectKey, version);
+        if (newVersion == null) {
+            return;
+        }
+
+        LOGGER.fine("Fetching issues with JQL:" + query);
+        List<Issue> issues = service.getIssuesFromJqlSearch(query, Integer.MAX_VALUE);
+        if (issues == null || issues.isEmpty()) {
+            return;
+        }
+        LOGGER.fine("Found issues: " + issues.size());
+
+        for (Issue issue : issues) {
+            LOGGER.fine("Adding version: " + newVersion.getName() + " to issue: " + issue.getKey());
+            List<Version> fixVersions = Lists.newArrayList(issue.getFixVersions());
+            fixVersions.add(newVersion);
+            service.updateIssue(issue.getKey(), fixVersions);
+        }
+    }
+
+    /**
+     * Progresses the issue's workflow by performing the specified action. The issue's new status is returned.
+     *
+     * @param issueKey
+     * @param actionId
+     * @return The new status
+     */
