@@ -1,0 +1,33 @@
+def getFrontEndReleaseVersions() {
+  def versions = jiraGetProjectVersions idOrKey: 'YOUR-PROJECT-KEY', site: 'YOUR-CONFIGURED-JIRA-SITE'
+  return versions.data.findAll { it.released == false && it.name.contains('FE') }
+}
+
+FE_RELEASE_VERSIONS = getFrontEndReleaseVersions()
+
+
+
+
+pipeline {
+  // ...
+  stages {
+    steps {
+      script {
+        try {
+          def issuekey = (GIT_BRANCH.toUpperCase() =~ /JIRAPROJECTID-\d*/)[0]
+
+          def editedIssue = [fields: [fixVersions: [FE_RELEASE_VERSIONS.first()]]]
+
+          def response = jiraEditIssue idOrKey: issuekey, issue: editedIssue, site: 'YOUR-CONFIGURED-JIRA-SITE'
+
+          echo response.successful.toString()
+          echo response.data.toString()
+        } catch (Exception e) {
+          echo "Could not update fixVersions. Please do it manually"
+        }
+      }
+    }
+
+    // ...
+  }
+}
