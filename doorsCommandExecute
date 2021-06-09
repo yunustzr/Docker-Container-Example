@@ -1,0 +1,34 @@
+
+How to run DXL script under command line?
+How To
+
+Summary
+
+This article presents three ways to run DXL script under command line and explains the subtle differences among them.
+Steps
+Supposed you want to run the following DXL code
+print("Hello world")
+
+and there is a file called hello.dxl containing the following line
+print("Hello world")
+
+There are three ways to run DXL script under command line.
+1) Run the codes directly with -D (or -dxl) switch, followed by the DXL codes
+Example:
+"C:\Program Files\IBM\Rational\DOORS\9.6\bin\doors.exe" -u username -pass password -D "print(\"Hello world\")"
+
+Note: all " must be escaped, for example, print("Hello world") should be written as print(\"Hello world\")
+
+2) Run the codes in a DXL file with -D (or -dxl) switch and #include statement
+Example:
+"C:\Program Files\IBM\Rational\DOORS\9.6\bin\doors.exe" -u username -pass password -D "#include \"C:\\DXL\\test.dxl\""
+or
+"C:\Program Files\IBM\Rational\DOORS\9.6\bin\doors.exe" -u username -pass password -D "#include \"C:/DXL/test.dxl\""
+
+Note: #include is used for executing DXL codes in a DXL file
+Note: \ in a path must be escaped, for example, c:\DXL\test.dxl should be written as c:\\DXL\\test.dxl
+Note: / can be used in path to avoid escaping the \ character, for example, c:\DXL\test.dxl can be written as c:/DXL/test.dxl
+
+3) Run the codes in a DXL file with -b (or -batch) switch, followed by the DXL file name
+Example:
+c:\Program Files\ibm\Rational\DOORS\9.6\bin\doors.exe" -u username -pass password -b hello.dxl
