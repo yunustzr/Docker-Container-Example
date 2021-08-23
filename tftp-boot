@@ -1,0 +1,1 @@
+docker run --name tftp -p 69:69/udp -p 65500-65515:65500-65515/udp v /var/tftpboot/:/var/tftpboot -d local-tftp
