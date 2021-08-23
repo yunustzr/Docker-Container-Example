@@ -1,1 +1,2 @@
 docker run --name tftp -p 69:69/udp -p 65500-65515:65500-65515/udp v /var/tftpboot/:/var/tftpboot -d local-tftp
+Kullanmak yerine ağ yığınıyla etkileşim kurmak için --privileged onlar kullanmalı --cap-add=NET_ADMIN ağ arabirimlerini değiştirmek için. 
